@@ -1,10 +1,8 @@
 use hound::WavReader;
 
 fn main() {
-    // Specify the input file path
     let input_path = "output.wav";
 
-    // Read the WAV file
     let mut reader = WavReader::open(input_path).expect("Failed to open input file");
 
     // Set the reference amplitude for 16-bit audio
@@ -14,7 +12,7 @@ fn main() {
     // 4000 kinda matches lufs values in my daw
     let min_amplitude_threshold = 4000.0;
 
-    // Calculate the sum of dB values and the count of samples
+    // sum of dB +  count of samples
     let (sum_db, count) = reader
         .samples::<i16>()
         .fold((0.0, 0), |(sum_db, count), sample| {
@@ -22,10 +20,10 @@ fn main() {
                 Ok(amplitude) => {
                     let amplitude = amplitude as f64;
 
-                    // Ensure that amplitude is within the valid range
+                    // Ensure that amplitude is legit
                     let amplitude = amplitude.max(-reference_amplitude).min(reference_amplitude);
 
-                    // Ensure that amplitude is not zero to avoid log(0) issues
+                    // Ensure that amplitude is not zero
                     let amplitude = amplitude.abs().max(f64::EPSILON);
 
                     // Check if amplitude is above the threshold
